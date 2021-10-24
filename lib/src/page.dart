@@ -45,7 +45,7 @@ class _PDFPageState extends State<PDFPage> {
   @override
   void didUpdateWidget(PDFPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.imgPath != widget.imgPath) {
+    if (oldWidget.imgPath != widget.imgPath && oldWidget.imgPath != null) {
       _repaint();
     }
   }
