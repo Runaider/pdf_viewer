@@ -19,6 +19,7 @@ class PDFPage extends StatefulWidget {
   final double minScale;
   final double maxScale;
   final double panLimit;
+  final Function? onPageError;
   PDFPage(
     this.imgPath,
     this.num, {
@@ -27,6 +28,7 @@ class PDFPage extends StatefulWidget {
     this.minScale = 1.0,
     this.maxScale = 5.0,
     this.panLimit = 1.0,
+    this.onPageError,
   });
 
   @override
@@ -53,9 +55,18 @@ class _PDFPageState extends State<PDFPage> {
   _repaint() {
     provider = FileImage(File(widget.imgPath!));
     final resolver = provider.resolve(createLocalImageConfiguration(context));
-    resolver.addListener(ImageStreamListener((imgInfo, alreadyPainted) {
-      if (!alreadyPainted) setState(() {});
-    }));
+    resolver.addListener(
+      ImageStreamListener(
+        (imgInfo, alreadyPainted) {
+          if (!alreadyPainted) setState(() {});
+        },
+        onChunk: (a) => {},
+        onError: (a, b) {
+          print('error');
+          widget.onPageError?.call();
+        },
+      ),
+    );
   }
 
   @override

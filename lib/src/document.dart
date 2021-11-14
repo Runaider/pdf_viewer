@@ -90,6 +90,7 @@ class PDFDocument {
     final double? minScale,
     final double? maxScale,
     final double? panLimit,
+    final Function? onPageError,
   }) async {
     assert(page > 0);
     if (_preloaded && _pages.isNotEmpty) return _pages[page - 1];
@@ -103,6 +104,7 @@ class PDFDocument {
       minScale: minScale ?? 1.0,
       maxScale: maxScale ?? 5.0,
       panLimit: panLimit ?? 1.0,
+      onPageError: onPageError,
     );
   }
 
@@ -112,6 +114,7 @@ class PDFDocument {
     final double? minScale,
     final double? maxScale,
     final double? panLimit,
+    final Function? onPageError,
   }) async {
     int countvar = 1;
     for (final _ in List.filled(count, null)) {
@@ -125,6 +128,7 @@ class PDFDocument {
         minScale: minScale ?? 1.0,
         maxScale: maxScale ?? 5.0,
         panLimit: panLimit ?? 1.0,
+        onPageError: onPageError,
       ));
       countvar++;
     }

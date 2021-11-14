@@ -48,6 +48,7 @@ class PDFViewer extends StatefulWidget {
   final double? maxScale;
   final double? panLimit;
   final ValueChanged<int>? onPageChanged;
+  final Function? onPageError;
 
   final Widget Function(
     BuildContext,
@@ -82,6 +83,7 @@ class PDFViewer extends StatefulWidget {
     this.pickerButtonColor,
     this.pickerIconColor,
     this.onPageChanged,
+    this.onPageError,
   }) : super(key: key);
 
   _PDFViewerState createState() => _PDFViewerState();
@@ -104,12 +106,14 @@ class _PDFViewerState extends State<PDFViewer> {
     _pageNumber = _pageController.initialPage + 1;
     if (!widget.lazyLoad)
       widget.document.preloadPages(
-        onZoomChanged: onZoomChanged,
-        zoomSteps: widget.zoomSteps,
-        minScale: widget.minScale,
-        maxScale: widget.maxScale,
-        panLimit: widget.panLimit,
-      );
+          onZoomChanged: onZoomChanged,
+          zoomSteps: widget.zoomSteps,
+          minScale: widget.minScale,
+          maxScale: widget.maxScale,
+          panLimit: widget.panLimit,
+          onPageError: () {
+            widget.onPageError?.call();
+          });
   }
 
   @override
@@ -117,7 +121,7 @@ class _PDFViewerState extends State<PDFViewer> {
     super.didChangeDependencies();
     _pageNumber = _pageController.initialPage + 1;
     _isLoading = true;
-    _pages = List.filled(widget.document.count,null);
+    _pages = List.filled(widget.document.count, null);
     // _loadAllPages();
     _loadPage();
   }
@@ -145,13 +149,15 @@ class _PDFViewerState extends State<PDFViewer> {
       _isLoading = true;
     });
     final data = await widget.document.get(
-      page: _pageNumber,
-      onZoomChanged: onZoomChanged,
-      zoomSteps: widget.zoomSteps,
-      minScale: widget.minScale,
-      maxScale: widget.maxScale,
-      panLimit: widget.panLimit,
-    );
+        page: _pageNumber,
+        onZoomChanged: onZoomChanged,
+        zoomSteps: widget.zoomSteps,
+        minScale: widget.minScale,
+        maxScale: widget.maxScale,
+        panLimit: widget.panLimit,
+        onPageError: () {
+          widget.onPageError?.call();
+        });
     _pages![_pageNumber - 1] = data;
     if (mounted) {
       setState(() {
